@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    image: kezhou932/backend-image:latest
+    environment:
+      - DB_HOST=${rds_endpoint}
+      - DB_HOST=ecommerce-db.cpuqaemcac7u.us-east-1.rds.amazonaws.com
+      - DB_NAME=ecommercedb
+      - DB_USER=kurac5user
+      - DB_PASSWORD=kurac5password
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+    ports:
+      - "8000:8000"
+    command: >
+          sh -c "python manage.py migrate &&
+                python manage.py dumpdata --database=sqlite --natural-foreign --natural-primary -e contenttypes -e auth.Permission --indent 4 > datadump.json &&
+                python manage.py loaddata datadump.json &&
+                rm -f db.sqlite3 &&
+                python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    image: kezhou932/frontend-image:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

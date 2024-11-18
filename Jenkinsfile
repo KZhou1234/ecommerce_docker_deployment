@@ -10,7 +10,7 @@ pipeline {
       agent any
       steps {
         sh '''#!/bin/bash
-        <code to build the application>
+        
         '''
       }
     }
@@ -19,7 +19,10 @@ pipeline {
       agent any
       steps {
         sh '''#!/bin/bash
-        <code to activate virtual environment>
+        python3.9 -m venv venv
+        source venv/bin/activate
+        cd ./backend
+        pip install -r requirements.txt
         pip install pytest-django
         python backend/manage.py makemigrations
         python backend/manage.py migrate
@@ -48,14 +51,14 @@ pipeline {
         
         // Build and push backend
         sh '''
-          docker build -t <backend image tagged for dockerhub>:latest -f Dockerfile.backend .
-          docker push <backend image tagged for dockerhub:latest
+          docker build -t kezhou932/backend-image:latest -f Dockerfile.backend .
+          docker push kezhou932/backend-image:latest
         '''
         
         // Build and push frontend
         sh '''
-          docker build -t <frontent image tagged for dockerhub>:latest -f Dockerfile.frontend .
-          docker push <frontend image tagged for dockerhub>:latest
+          docker build -t kezhou932/frontend-image:latest -f Dockerfile.frontend .
+          docker push kezhou932/frontend-image:latest
         '''
       }
     }

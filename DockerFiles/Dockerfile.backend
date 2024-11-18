@@ -1,8 +1,8 @@
 FROM python:3.9
 EXPOSE 8000
 WORKDIR /app
-COPY ./C5-Deployment-Workload-6/backend /app
-COPY ./C5-Deployment-Workload-6/backend/requirements.txt /app/
+COPY ./ecommerce_docker_deployment/backend /app
+COPY ./ecommerce_docker_deployment/backend/requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install django-environ
