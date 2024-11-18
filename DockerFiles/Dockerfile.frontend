@@ -1,0 +1,6 @@
+FROM node:14
+WORKDIR /app
+COPY ./C5-Deployment-Workload-6/frontend /app
+EXPOSE 3000
+RUN npm install
+CMD ["npm", "start"]
