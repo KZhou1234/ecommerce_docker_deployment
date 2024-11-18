@@ -18,9 +18,22 @@
   2.  eip (optional)
 * App Server
   1. The load balancer will forward the HTTP traffic to the web tier. In this step, the load balancer facing the public internet will listen on port 80 and forward traffic to port 3000 on app server. To ensure the security, port 3000 will only open to load balancer security group.
- 
+ 1. VPC map created by terraform
+    <div>
+      <img width="1498" alt="image" src="https://github.com/user-attachments/assets/03422027-9ecc-4a5a-bc57-41233b344c25">
+    </div>
+2. Scripts
+   a. Credential Management --Use `.env` file for local deployment. 
+   
   ## TROUBLE SHOOTING
-  * terraform configuration: 
+  * terraform configuration:
+  * Attributes specification in main module.
+  * Cannot execute scripts in userdata. Check the log in `/var/log/cloud-init-output.log` which contains execution logs of user data and other initialization tasks.
+  * Database endpoint issue: manually connected, setting.py checked, aws console checked.
+  * <div>
+    <img width="808" alt="image" src="https://github.com/user-attachments/assets/8a15030c-0c8b-4f5a-99af-99f051e8f1b2">
+
+  </div>
  
 ## Database  
 * One database reuqired for the data consistency, high effciency.
