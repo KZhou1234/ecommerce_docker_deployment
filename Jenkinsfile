@@ -12,9 +12,9 @@ pipeline {
         sh '''#!/bin/bash
         python3.9 --version
         python3.9 -m venv venv
-        source venv/bin/activate
+        source .venv/bin/activate
         cd ./backend
-        pip install -r requirements.txt
+        python3 -m pip install -r requirements.txt
         '''
       }
     }
@@ -23,7 +23,7 @@ pipeline {
       agent any
       steps {
         sh '''#!/bin/bash
-        source venv/bin/activate
+        source .venv/bin/activate
         pip install pytest-django
         python backend/manage.py makemigrations
         python backend/manage.py migrate
