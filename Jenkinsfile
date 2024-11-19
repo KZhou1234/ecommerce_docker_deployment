@@ -74,6 +74,7 @@ pipeline {
                             dir('Terraform') {
                               sh '''
                               terraform init
+                              terraform destroy
                               terraform plan -out plan.tfplan\
                                -var="default_subnet_id=subnet-04b4d6310c2cab924"\
                                -var="aws_access_key=${aws_access_key}"\
