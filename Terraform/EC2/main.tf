@@ -18,6 +18,7 @@ resource "aws_instance" "monitoring" {
   # Security groups control the inbound and outbound traffic to your EC2 instance.
   vpc_security_group_ids = [aws_security_group.monitoring_sg.id]       # Replace with the security group ID, e.g., "sg-01297adb7229b5f08".
   key_name          = "mykey"                # The key pair name for SSH access to the instance.
+  user_data = file("${path.module}/../../Scripts/monitoring_setup.sh")
   tags = {
     "Name" : "monitoring"         
   }
@@ -35,7 +36,8 @@ resource "aws_instance" "ecommerce_bastion_az1" {
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]       # Replace with the security group ID, e.g., "sg-01297adb7229b5f08".
   key_name          = "mykey"                # The key pair name for SSH access to the instance.
   
-  
+  user_data = file("${path.module}/../../Scripts/bastionHost_setup.sh")
+
   # Tagging the resource with a Name label. Tags help in identifying and organizing resources in AWS.
   tags = {
     "Name" : "ecommerce_bastion_az1"         
@@ -56,7 +58,8 @@ resource "aws_instance" "ecommerce_bastion_az2" {
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]       # Replace with the security group ID, e.g., "sg-01297adb7229b5f08".
   key_name          = "mykey"                # The key pair name for SSH access to the instance.
 # user data
-  
+  user_data = file("${path.module}/../../Scripts/bastionHost_setup.sh")
+
   # Tagging the resource with a Name label. Tags help in identifying and organizing resources in AWS.
   tags = {
     "Name" : "ecommerce_bastion_az2"         
