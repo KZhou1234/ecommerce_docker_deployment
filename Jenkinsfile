@@ -74,7 +74,12 @@ pipeline {
                             dir('Terraform') {
                               sh '''
                               terraform init
-                              terraform destroy
+                              terraform destroy -auto-approve\
+                               -var="default_subnet_id=subnet-04b4d6310c2cab924"\
+                               -var="aws_access_key=${aws_access_key}"\
+                               -var="aws_secret_key=${aws_secret_key}" \
+                               -var="dockerhub_username=${DOCKER_CREDS_USR}" \
+                               -var="dockerhub_password=${DOCKER_CREDS_PSW}"
                               terraform plan -out plan.tfplan\
                                -var="default_subnet_id=subnet-04b4d6310c2cab924"\
                                -var="aws_access_key=${aws_access_key}"\
