@@ -100,7 +100,7 @@ pipeline {
   }
 
   post {
-    //always {
+    always {
       agent { label 'build-node' }
       steps {
         sh '''
@@ -108,6 +108,6 @@ pipeline {
           docker system prune -f
         '''
       }
-    //}
+    }
   }
 }
