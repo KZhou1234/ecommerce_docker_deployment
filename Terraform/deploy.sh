@@ -49,7 +49,8 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] docker-compose.yml created"
 
 docker-compose pull
 docker-compose up -d --force-recreate
-sudo docker system prune -a -f
+#sudo docker system prune -a -f
 
 # Log out from Docker Hub
 docker logout
+docker system prune -f
