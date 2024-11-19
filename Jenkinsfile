@@ -10,6 +10,7 @@ pipeline {
       agent any
       steps {
         sh '''#!/bin/bash
+        python3.9 --version
         python3.9 -m venv venv
         source venv/bin/activate
         cd ./backend
