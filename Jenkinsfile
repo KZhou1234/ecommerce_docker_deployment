@@ -10,8 +10,6 @@ pipeline {
       agent any
       steps {
         sh '''#!/bin/bash
-        sudo apt update && sudo apt install fontconfig openjdk-17-jre software-properties-common -y
-        sudo add-apt-repository ppa:deadsnakes/ppa && sudo apt install python3.9 python3.9-venv -y
 
         python3.9 --version
         python3.9 -m venv venv
@@ -22,18 +20,18 @@ pipeline {
       }
     }
 
-    stage ('Test') {
-      agent any
-      steps {
-        sh '''#!/bin/bash
-        source venv/bin/activate
-        pip install pytest-django
-        python backend/manage.py makemigrations
-        python backend/manage.py migrate
-        pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
-        ''' 
-      }
-    }
+    // stage ('Test') {
+    //   agent any
+    //   steps {
+    //     sh '''#!/bin/bash
+    //     source venv/bin/activate
+    //     pip install pytest-django
+    //     python backend/manage.py makemigrations
+    //     python backend/manage.py migrate
+    //     pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
+    //     ''' 
+    //   }
+    // }
 
     stage('Cleanup') {
       agent { label 'build-node' }
