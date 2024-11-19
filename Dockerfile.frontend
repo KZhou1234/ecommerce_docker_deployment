@@ -1,0 +1,6 @@
+FROM node:14
+WORKDIR /app
+COPY ./ecommerce_docker_deployment/frontend /app
+EXPOSE 3000
+RUN npm install
+CMD ["npm", "start"]
