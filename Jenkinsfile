@@ -20,18 +20,18 @@ pipeline {
       }
     }
 
-    // stage ('Test') {
-    //   agent any
-    //   steps {
-    //     sh '''#!/bin/bash
-    //     source venv/bin/activate
-    //     pip install pytest-django
-    //     python backend/manage.py makemigrations
-    //     python backend/manage.py migrate
-    //     pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
-    //     ''' 
-    //   }
-    // }
+    stage ('Test') {
+      agent any
+      steps {
+        sh '''#!/bin/bash
+        source venv/bin/activate
+        pip install pytest-django
+        python backend/manage.py makemigrations
+        python backend/manage.py migrate
+        pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
+        ''' 
+      }
+    }
 
     stage('Cleanup') {
       agent { label 'build-node' }
@@ -100,7 +100,7 @@ pipeline {
   }
 
   post {
-    always {
+    //always {
       agent { label 'build-node' }
       steps {
         sh '''
@@ -108,6 +108,6 @@ pipeline {
           docker system prune -f
         '''
       }
-    }
+    //}
   }
 }
