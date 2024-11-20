@@ -20,18 +20,18 @@ pipeline {
       }
     }
 
-    // stage ('Test') {
-    //   agent any
-    //   steps {
-    //     sh '''#!/bin/bash
-    //     source venv/bin/activate
-    //     pip install pytest-django
-    //     python backend/manage.py makemigrations
-    //     python backend/manage.py migrate
-    //     pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
-    //     ''' 
-    //   }
-    // }
+    stage ('Test') {
+      agent any
+      steps {
+        sh '''#!/bin/bash
+        source venv/bin/activate
+        pip install pytest-django
+        python backend/manage.py makemigrations
+        python backend/manage.py migrate
+        pytest backend/account/tests.py --verbose --junit-xml test-reports/results.xml
+        ''' 
+      }
+    }
 
     stage('Cleanup') {
       agent { label 'build-node' }
@@ -74,12 +74,6 @@ pipeline {
                             dir('Terraform') {
                               sh '''
                               terraform init
-                              terraform destroy -auto-approve\
-                               -var="default_subnet_id=subnet-04b4d6310c2cab924"\
-                               -var="aws_access_key=${aws_access_key}"\
-                               -var="aws_secret_key=${aws_secret_key}" \
-                               -var="dockerhub_username=${DOCKER_CREDS_USR}" \
-                               -var="dockerhub_password=${DOCKER_CREDS_PSW}"
                               terraform plan -out plan.tfplan\
                                -var="default_subnet_id=subnet-04b4d6310c2cab924"\
                                -var="aws_access_key=${aws_access_key}"\
@@ -101,7 +95,8 @@ pipeline {
 
   post {
     always {
-      agent { label 'build-node' }
+      node('build-node')
+      //agent { label 'build-node' }
       steps {
         sh '''
           docker logout
