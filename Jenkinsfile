@@ -93,9 +93,7 @@ pipeline {
 
   post {
     always {
-      node('build-node')
-      //agent { label 'build-node' }
-      steps {
+      node('build-node') {
         sh '''
           docker logout
           docker system prune -f
