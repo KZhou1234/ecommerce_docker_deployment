@@ -299,20 +299,20 @@ resource "aws_route" "default_to_wl6" {
 }
 
 # Private Route table az1 entry for WL6 VPC to Default VPC
-resource "aws_route" "wl6_to_default" {
+resource "aws_route" "wl6_prt1_to_default" {
   route_table_id            = aws_route_table.private_route_table_az1.id 
   destination_cidr_block    = data.aws_vpc.default.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peer-connection.id
 }
-# Private Route table az1 entry for WL6 VPC to Default VPC
-resource "aws_route" "wl6_to_default" {
+# Private Route table az2 entry for WL6 VPC to Default VPC
+resource "aws_route" "wl6_prt2_to_default" {
   route_table_id            = aws_route_table.private_route_table_az2.id 
   destination_cidr_block    = data.aws_vpc.default.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peer-connection.id
 }
 
 # Public Route table entry for WL6 VPC to Default VPC
-resource "aws_route" "wl6_to_default" {
+resource "aws_route" "wl6_pbt_to_default" {
   route_table_id            = aws_route_table.route_table.id 
   destination_cidr_block    = data.aws_vpc.default.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.peer-connection.id
