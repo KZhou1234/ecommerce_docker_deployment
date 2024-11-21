@@ -44,7 +44,7 @@ The goal is to evaluate these models, compare their performance, and decide on t
 
 Applying the autoencoder model to the test dataset, I detected 53 cases of fraud.
 
-      ![Alt text](image-2.png)  
+   ![Alt text](image-2.png)  
 
 Results for the isolation forest model:
 
