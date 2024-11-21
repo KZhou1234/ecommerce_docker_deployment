@@ -7,6 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1bVEJjjaxjjnA0MZOxHjuZqAd1ELsRvEJ
 """
 
+
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -14,15 +15,32 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.optimizers import Adam
+
+
+import sqlite3
+
+conn = sqlite3.connect('db.sqlite3')
+data = pd.read_sql_query("SELECT * FROM account_stripemodel", conn)
+conn.close()
 
 # Preprocessing
 # Drop unnecessary columns and only keep numerical or encoded categorical features
-data = data.drop(['id', 'card_id', 'customer_id', 'email', 'address_city', 'address_country', 'name_on_card'], axis=1)
+#data = data.drop(['id', 'card_id', 'customer_id', 'email', 'address_city', 'address_country', 'name_on_card'], axis=1)
+data = data.drop(['id', 'card_id', 'customer_id', 'address_country'], axis=1)
 
 # Convert categorical features to numerical using Label Encoding
 label_encoder = LabelEncoder()
 for column in ['address_state']:
     data[column] = label_encoder.fit_transform(data[column])
+
+data['email_domain'] = data['email'].apply(lambda x: x.split('@')[-1])
+data['email_domain_freq'] = data.groupby('email_domain')['email_domain'].transform('count')
+data.drop(columns=['email', 'email_domain'], inplace=True)
+data['name_frequency'] = data.groupby('name_on_card')['name_on_card'].transform('count')
+data.drop(columns=['name_on_card'], inplace=True)
+
+data['address_city'] = label_encoder.fit_transform(data['address_city'])
 
 # Normalize the data
 scaler = StandardScaler()
@@ -33,17 +51,18 @@ train_data, test_data = train_test_split(data_scaled, test_size=0.2, random_stat
 
 # Build the Autoencoder
 input_dim = train_data.shape[1]
+#increase layer 2x, from 0.58-0.54
 input_layer = Input(shape=(input_dim,))
-encoded = Dense(8, activation="relu")(input_layer)
-encoded = Dense(4, activation="relu")(encoded)
-decoded = Dense(8, activation="relu")(encoded)
+encoded = Dense(16, activation="relu")(input_layer)
+encoded = Dense(8, activation="relu")(encoded)
+decoded = Dense(16, activation="relu")(encoded)
 decoded = Dense(input_dim, activation="sigmoid")(decoded)
 
 autoencoder = Model(inputs=input_layer, outputs=decoded)
-autoencoder.compile(optimizer='adam', loss='mse')
+autoencoder.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
 
 # Train the Autoencoder
-history = autoencoder.fit(train_data, train_data, epochs=50, batch_size=16, validation_split=0.2, shuffle=True)
+history = autoencoder.fit(train_data, train_data, epochs=30, batch_size=8, validation_split=0.2, shuffle=True)
 
 # Calculate reconstruction error on test data
 reconstructions = autoencoder.predict(test_data)
@@ -55,3 +74,38 @@ threshold = np.percentile(reconstruction_errors, 95)
 # Identify anomalies
 anomalies = test_data[reconstruction_errors > threshold]
 print("Number of anomalies detected:", len(anomalies))
+
+test_data = pd.read_csv('../AI_Concentration/account_stripemodel_fraud_data.csv')
+test_data = test_data.drop(['id', 'card_id', 'customer_id', 'address_country'], axis=1)
+
+
+#for test dataset:
+label_encoder = LabelEncoder()
+for column in ['address_state']:
+    test_data[column] = label_encoder.fit_transform(test_data[column])
+
+test_data['email_domain'] = test_data['email'].apply(lambda x: x.split('@')[-1])
+test_data['email_domain_freq'] = test_data.groupby('email_domain')['email_domain'].transform('count')
+test_data.drop(columns=['email', 'email_domain'], inplace=True)
+test_data['name_frequency'] = test_data.groupby('name_on_card')['name_on_card'].transform('count')
+test_data.drop(columns=['name_on_card'], inplace=True)
+
+test_data['address_city'] = label_encoder.fit_transform(test_data['address_city'])
+
+# Normalize the data
+scaler = StandardScaler()
+test_data_scaler = scaler.fit_transform(test_data)
+#print("Processed test data shape:", test_data_scaler.shape)
+
+
+
+# Calculate reconstruction error on test data
+reconstructions = autoencoder.predict(test_data)
+reconstruction_errors = np.mean(np.square(reconstructions - test_data), axis=1)
+
+# Set a threshold for anomaly detection
+threshold = np.percentile(reconstruction_errors, 95)
+
+# Identify anomalies
+anomalies = test_data[reconstruction_errors > threshold]
+print("Number of anomalies detectedin test dataset:", len(anomalies))

@@ -12,14 +12,41 @@ import numpy as np
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
+import sqlite3
+
+conn = sqlite3.connect('db.sqlite3')
+data = pd.read_sql_query("SELECT * FROM account_stripemodel", conn)
+conn.close()
 # Preprocessing
 # Drop unnecessary columns and only keep numerical or encoded categorical features
-data = data.drop(['id', 'card_id', 'customer_id', 'email', 'address_city', 'address_country', 'name_on_card'], axis=1)
+# Hve the card id, address city on the file: 'card_id','address_city', 
+data = data.drop(['id', 'address_country', 'name_on_card','address_country'], axis=1)
+print(data.columns)
 
 # Convert categorical features to numerical using Label Encoding
 label_encoder = LabelEncoder()
 for column in ['address_state']:
     data[column] = label_encoder.fit_transform(data[column])
+    
+for column in ['address_city']:
+    data[column] = label_encoder.fit_transform(data[column])
+    
+#Frequency Encoding: Replace categorical values with their frequency counts.
+data['card_id_freq'] = data.groupby('card_id')['card_id'].transform('count')
+data.drop(columns=['card_id'], inplace=True)
+
+#encoding and drop
+data['email_domain'] = data['email'].apply(lambda x: x.split('@')[-1])
+data['email_domain_freq'] = data.groupby('email_domain')['email_domain'].transform('count')
+
+data.drop(columns=['email'], inplace=True)
+data.drop(columns=['email_domain'], inplace=True)
+
+
+data['card_user_count'] = data.groupby('card_number')['user_id'].transform('count')
+
+data['customer_id_count'] = data.groupby('customer_id')['user_id'].transform('count')
+data.drop(columns=['customer_id'], inplace=True)
 
 # Create a 'potential_fraud' column and initialize it to 0
 data['potential_fraud'] = 0
@@ -51,35 +78,6 @@ fraudulent_transactions = data[data['fraud'] == 1]
 print("Number of fraudulent transactions detected:", len(fraudulent_transactions))
 fraudulent_transactions
 
-# Feature Engineering
-data['email_domain'] = data['email'].apply(lambda x: x.split('@')[-1])
-data['card_user_count'] = data.groupby('card_number')['user_id'].transform('count')
-data['customer_id_count'] = data.groupby('customer_id')['user_id'].transform('count')
+test_data = pd.read_csv('../AI_Concentration/account_stripemodel_fraud_data.csv')
+test_data = test_data.drop(['id', 'card_id', 'customer_id', 'address_country'], axis=1)
 
-# Label Encoding for categorical variables
-from sklearn.preprocessing import LabelEncoder
-label_encoder = LabelEncoder()
-data['address_country'] = label_encoder.fit_transform(data['address_country'])
-data['address_state'] = label_encoder.fit_transform(data['address_state'])
-data['email_domain'] = label_encoder.fit_transform(data['email_domain'])
-
-#FIRST ML MODEL
-from sklearn.ensemble import IsolationForest
-
-# Define features for anomaly detection
-features = ['card_user_count', 'customer_id_count', 'address_country', 'address_state', 'exp_month', 'exp_year']
-X = data[features]
-
-# Train Isolation Forest model
-iso_forest = IsolationForest(contamination=0.05, random_state=42)  # Adjust contamination to set expected outlier ratio
-data['is_fraud'] = iso_forest.fit_predict(X)
-
-# Interpret results: -1 indicates anomaly (potential fraud), 1 indicates normal
-data['is_fraud'] = data['is_fraud'].apply(lambda x: 1 if x == -1 else 0)
-
-# View potential fraud cases
-fraud_cases = data[data['is_fraud'] == 1]
-print(fraud_cases)
-
-anomalies = data[data['reconstruction_error'] > threshold]
-anomalies

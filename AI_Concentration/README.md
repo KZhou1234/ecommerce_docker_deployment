@@ -26,6 +26,7 @@ The goal is to evaluate these models, compare their performance, and decide on t
      - **Isolation Forest**: Identified 151 anomalies.
      - **DBSCAN**: Identified 2 anomalies.
      - **Autoencoder**: Identified 30 anomalies.   
+     ![Alt text](image.png)
    - Adjust the anomaly detection thresholds and observe how each model's performance changes.  
 
 4. **Select One Model**  
@@ -50,7 +51,8 @@ The goal is to evaluate these models, compare their performance, and decide on t
    Explain which model you chose and why. Provide logical reasoning (e.g., model performance, interpretability, or ease of integration).  
 
 - **Tuning and Testing**  
-   Detail the tuning process, including any adjustments to parameters or preprocessing steps. Explain why these changes were necessary and how they improved the model's accuracy or robustness.  
+   ![Alt text](image-2.png)
+   ![Alt text](image-1.png) 
 
 - **Results**  
    Summarize the final performance of the model on both the training and testing datasets, including any metrics (e.g., precision, recall, F1 score). Discuss the effectiveness of the model in detecting anomalies.
