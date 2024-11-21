@@ -16,28 +16,39 @@ The goal is to evaluate these models, compare their performance, and decide on t
 1. Deploy the application to the target production env.
 
 
-- **Model Selection**  
-   1. By looking our dataset, we don't have label for the data; therefore, we need to use unsupervised machine learning model.
-   2. Comparing these three given models, the isolation forests model is better for the large dataset. Clustering with DBSCAN may not perform well for that. 
-   3. I selected autiencoder model to train because it have the ablity to learn features using deep neural network.  
+- **Model Selection**   
+
+   1. Based on our dataset, we don't have labels for the data; therefore, we need to use an unsupervised machine learning model.
+   2. Comparing the three given models, the isolation forest model is better suited for large datasets. Clustering with DBSCAN may not perform well for this dataset.
+   3. I selected an autoencoder model for training because it has the ability to learn features using a deep neural network.
 
 - **Tuning and Testing**  
-   1. I've tuning the model by adjusting the number of neurons in each layer and also decrease the batch size and the learning rate. Theratically, it can improve the accuracy of detection or feature learning. However, in this case, the improvment is not obvious. 
+   1. I tuned the model by adjusting the number of neurons in each layer and also decreased the batch size and learning rate. Theoretically, this can improve detection accuracy or feature learning, but in this case, the improvement was not significant.  
+
    ![Alt text](image-3.png)
 
-   2. I've also investigated the features in the dataset. The arttributes for example the occurance of "card_number" also can reflect the fraud in some sense. I decide not to drop that column, but transfer it to the count. By adding more features to the data, the loss decrease. As shown below. From 0.64 to 0.47. However, the anomalies detection does not change. The loss is a metric for the model, but for each instance, it may not reflect that improvement. 
-   ![Alt text](image-2.png)
-   3. I've then try to add another feature is 'name_on_card" to investgated how this feature affect the detection. It made the loss increase, so I dropped it. 
-   ![Alt text](image-1.png) 
-   4. I've also try to look into the threshold for reconstructions error, it turns out if I reduce the threshold, more transactions will be identified as anomalies. 95th is a reasonable threshold. 
+   2. I also investigated the features in the dataset. The attribute "card_number" could reflect fraud in some sense, so I decided not to drop that column, but instead transform it into a count. By adding more features to the data, the loss decreased from 0.64 to 0.47, as shown below. However, the anomaly detection results did not change. While the loss is a metric for the model, it may not reflect improvement for individual instances.  
+
+   ![Alt text](image-2.png)  
+
+   3. I also tried adding another feature, "name_on_card," to investigate its effect on detection. It caused the loss to increase, so I dropped it.  
+
+   ![Alt text](image-1.png)   
+
+   4. I experimented with the threshold for reconstruction error, finding that reducing the threshold resulted in more transactions being identified as anomalies. A 95th percentile threshold seemed reasonable.
+
          ![Alt text](image-4.png)
 
 
 - **Results**  
 
-   Apply the autoencoder-model to the test dataset, I've got 53 fraud detection. 
-      ![Alt text](image-2.png)
-The result for the isolate forest model
+Applying the autoencoder model to the test dataset, I detected 53 cases of fraud.
+
+      ![Alt text](image-2.png)  
+
+Results for the isolation forest model:
+
    ![Alt text](image-5.png)
+
 - **Integration into Application UI**  
    Propose how this model could be integrated into the current application UI for admins.
